@@ -1,0 +1,31 @@
+name: Rails CI Workflow
+on: [push]
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up Ruby
+        uses: actions/setup-ruby@v1
+        with:
+          ruby-version: 2.6.3
+      - name: Set up Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.14.0
+      - name: Install dependencies
+        run: |
+          sudo apt-get install libmysqlclient-dev
+          sudo apt-get -yqq install libpq-dev
+          gem install bundler
+          bundle install
+          yarn install
+      - name: Push the artifact to S3
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          git archive --format=tar.gz HEAD > rails_test_app_v1.0.0-SNAPSHOT.tar.gz
+          aws s3 cp rails_test_app_v1.0.0-SNAPSHOT.tar.gz s3://skeyn-dev-artifacts
