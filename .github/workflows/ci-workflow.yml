@@ -8,9 +8,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Set up Ruby
-        uses: actions/setup-ruby@v1
+        uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.6
+          ruby-version: 2.6.3
       - name: Set up Node
         uses: actions/setup-node@v1
         with:
@@ -28,4 +28,4 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
           git archive --format=tar.gz HEAD > rails_test_app_v1.0.0-SNAPSHOT.tar.gz
-          aws s3 cp rails_test_app_v1.0.0-SNAPSHOT.tar.gz s3://skeyn-dev-artifacts
+          aws s3 cp rails_test_app_v1.0.0-SNAPSHOT.tar.gz s3://${{ secrets.AWS_S3_DEV_ARTIFACT_BUCKET }}
